@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Dinámica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+        
+        .fullscreen-container {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .textarea-container {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            height: 120px;
+            resize: none;
+            font-size: 1rem;
+        }
+        
+        textarea:focus {
+            outline: 2px solid #3498db;
+        }
+        
+        .edit-mode {
+            border: 2px solid #e74c3c;
+        }
+        
+        .edit-indicator {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            display: none;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        button {
+            padding: 10px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .start-button {
+            background-color: #2ecc71;
+        }
+        
+        .start-button:hover {
+            background-color: #27ae60;
+        }
+        
+        .reset-button {
+            background-color: #e67e22;
+        }
+        
+        .reset-button:hover {
+            background-color: #d35400;
+        }
+        
+        .fullscreen-button {
+            background-color: #9b59b6;
+        }
+        
+        .fullscreen-button:hover {
+            background-color: #8e44ad;
+        }
+        
+        .wheel-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        canvas {
+            cursor: pointer;
+        }
+        
+        .result-container {
+            margin-top: 1.5rem;
+            padding: 16px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: none;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+        
+        .controls-info {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .controls-info h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .controls-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .controls-info li {
+            margin-bottom: 5px;
+        }
+        
+        /* Estilos para pantalla completa */
+        :fullscreen {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        :-webkit-full-screen {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        :-ms-fullscreen {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="fullscreenContainer" class="fullscreen-container">
+        <h1>Ruleta Dinámica</h1>
+        
+        <div class="textarea-container">
+            <textarea id="itemsTextarea" placeholder="Ingresa los elementos de la ruleta (uno por línea)"></textarea>
+            <div id="editIndicator" class="edit-indicator">MODO EDICIÓN</div>
+        </div>
+        
+        <div class="wheel-container">
+            <canvas id="wheelCanvas" width="300" height="300"></canvas>
+        </div>
+        
+        <div class="buttons-container">
+            <button id="spinButton" class="start-button" onclick="spinWheel()" disabled>Iniciar</button>
+            <button id="resetButton" class="reset-button" onclick="resetRoulette()">Reiniciar</button>
+            <button id="fullscreenButton" class="fullscreen-button" onclick="toggleFullscreen()">Pantalla Completa</button>
+        </div>
+        
+        <div id="resultContainer" class="result-container">
+            <div class="result-title">Elemento seleccionado:</div>
+            <div id="selectedItem" class="result-value"></div>
+        </div>
+        
+        <div class="controls-info">
+            <h3>Controles:</h3>
+            <ul>
+                <li><strong>Espacio o clic en ruleta o botón Iniciar:</strong> Girar la ruleta</li>
+                <li><strong>Tecla S:</strong> Resaltar y ocultar el último elemento sorteado</li>
+                <li><strong>Tecla E o clic en textarea:</strong> Habilitar/deshabilitar modo edición</li>
+                <li><strong>Tecla R o botón Reiniciar:</strong> Restaurar elementos ocultos</li>
+                <li><strong>Tecla F o botón Pantalla Completa:</strong> Activar/desactivar pantalla completa</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Variables globales
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const textarea = document.getElementById('itemsTextarea');
+        const spinButton = document.getElementById('spinButton');
+        const resultContainer = document.getElementById('resultContainer');
+        const selectedItemElement = document.getElementById('selectedItem');
+        const editIndicator = document.getElementById('editIndicator');
+        const fullscreenContainer = document.getElementById('fullscreenContainer');
+        
+        let items = [];
+        let hiddenItems = [];
+        let isSpinning = false;
+        let rotation = 0;
+        let lastSelectedItem = null;
+        let lastSelectedIndex = -1;
+        let editMode = false;
+        let autoUpdateTimeout = null;
+        
+        // Colores básicos para los sectores
+        const colors = ['#FF5252', '#4CAF50', '#2196F3', '#FFC107', '#9C27B0'];
+        
+        // Agregar event listeners
+        canvas.addEventListener('click', spinWheel);
+        document.addEventListener('keydown', handleKeyDown);
+        textarea.addEventListener('click', enableEditMode);
+        textarea.addEventListener('input', handleTextareaChange);
+        
+        // Inicializar
+        function init() {
+            drawWheel();
+        }
+        
+        function handleKeyDown(e) {
+            // Tecla Espacio para girar la ruleta
+            if (e.code === 'Space' && !isSpinning && getActiveItems().length > 0) {
+                e.preventDefault();
+                spinWheel();
+            }
+            
+            // Tecla S para resaltar y ocultar el último elemento sorteado
+            if (e.key === 's' || e.key === 'S') {
+                if (lastSelectedItem !== null) {
+                    highlightAndHideLastSelected();
+                }
+            }
+            
+            // Tecla E para habilitar/deshabilitar modo edición
+            if (e.key === 'e' || e.key === 'E') {
+                toggleEditMode();
+            }
+            
+            // Tecla R para reiniciar (F8)
+            if (e.key === 'r' || e.key === 'R') {
+                resetRoulette();
+            }
+            
+            // Tecla F para pantalla completa (F9)
+            if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+        }
+        
+        // F8: Función para reiniciar la ruleta
+        function resetRoulette() {
+            // Restaurar elementos ocultos
+            hiddenItems = [];
+            
+            // Eliminar resaltado en el textarea
+            if (textarea.value.includes('[oculto]')) {
+                const lines = textarea.value.split('\n');
+                let newTextareaContent = '';
+                
+                for (let i = 0; i < lines.length; i++) {
+                    // Eliminar el marcador [oculto]
+                    newTextareaContent += lines[i].replace(' [oculto]', '') + '\n';
+                }
+                
+                textarea.value = newTextareaContent.trim();
+            }
+            
+            // Redibujar la ruleta con todos los elementos
+            drawWheel();
+            
+            // Mostrar mensaje de confirmación
+            alert('Ruleta reiniciada. Todos los elementos están disponibles para el sorteo.');
+        }
+        
+        // F9: Función para activar/desactivar pantalla completa
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.msFullscreenElement) {
+                // Entrar en pantalla completa
+                if (fullscreenContainer.requestFullscreen) {
+                    fullscreenContainer.requestFullscreen();
+                } else if (fullscreenContainer.mozRequestFullScreen) { // Firefox
+                    fullscreenContainer.mozRequestFullScreen();
+                } else if (fullscreenContainer.webkitRequestFullscreen) { // Chrome, Safari y Opera
+                    fullscreenContainer.webkitRequestFullscreen();
+                } else if (fullscreenContainer.msRequestFullscreen) { // IE/Edge
+                    fullscreenContainer.msRequestFullscreen();
+                }
+            } else {
+                // Salir de pantalla completa
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+        
+        function toggleEditMode() {
+            editMode = !editMode;
+            updateEditModeUI();
+        }
+        
+        function enableEditMode() {
+            editMode = true;
+            updateEditModeUI();
+        }
+        
+        function updateEditModeUI() {
+            if (editMode) {
+                textarea.classList.add('edit-mode');
+                editIndicator.style.display = 'block';
+            } else {
+                textarea.classList.remove('edit-mode');
+                editIndicator.style.display = 'none';
+            }
+        }
+        
+        function handleTextareaChange() {
+            // Cancelar cualquier actualización pendiente
+            if (autoUpdateTimeout) {
+                clearTimeout(autoUpdateTimeout);
+            }
+            
+            // Programar una actualización después de un breve retraso
+            autoUpdateTimeout = setTimeout(() => {
+                updateItemsFromTextarea();
+            }, 300);
+        }
+        
+        function updateItemsFromTextarea() {
+            const textValue = textarea.value.trim();
+            
+            if (textValue) {
+                // Dividir por líneas y filtrar líneas vacías
+                const newItems = textValue
+                    .split('\n')
+                    .map(item => item.trim().replace(' [oculto]', '')) // Eliminar el marcador para la lista interna
+                    .filter(item => item.length > 0);
+                
+                // Actualizar los items
+                items = newItems;
+                
+                // Identificar elementos ocultos basados en el marcador [oculto] en el textarea
+                hiddenItems = [];
+                const lines = textValue.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line.includes('[oculto]')) {
+                        const itemName = line.replace(' [oculto]', '');
+                        if (!hiddenItems.includes(itemName)) {
+                            hiddenItems.push(itemName);
+                        }
+                    }
+                }
+                
+                // Actualizar UI
+                if (items.length > 0) {
+                    spinButton.disabled = false;
+                    drawWheel();
+                } else {
+                    spinButton.disabled = true;
+                }
+            } else {
+                items = [];
+                hiddenItems = [];
+                spinButton.disabled = true;
+                drawWheel();
+            }
+        }
+        
+        function highlightAndHideLastSelected() {
+            if (lastSelectedItem === null || lastSelectedIndex === -1) return;
+            
+            // Añadir el item a la lista de ocultos
+            if (!hiddenItems.includes(lastSelectedItem)) {
+                hiddenItems.push(lastSelectedItem);
+            }
+            
+            // Resaltar el elemento en el textarea
+            const lines = textarea.value.split('\n');
+            let newTextareaContent = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                const cleanLine = line.replace(' [oculto]', '');
+                
+                if (cleanLine === lastSelectedItem && !line.includes('[oculto]')) {
+                    // Añadir un marcador para indicar que está oculto
+                    newTextareaContent += `${cleanLine} [oculto]\n`;
+                } else {
+                    newTextareaContent += `${line}\n`;
+                }
+            }
+            
+            textarea.value = newTextareaContent.trim();
+            
+            // Redibujar la ruleta sin el elemento oculto
+            drawWheel();
+        }
+        
+        function getActiveItems() {
+            // Devolver solo los elementos que no están ocultos
+            return items.filter(item => !hiddenItems.includes(item));
+        }
+        
+        function drawWheel() {
+            // Limpiar el canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const activeItems = getActiveItems();
+            
+            if (activeItems.length === 0) {
+                // Dibujar un círculo vacío si no hay elementos activos
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(centerX, centerY) - 10;
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#cccccc';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Dibujar texto de "Sin elementos"
+                ctx.fillStyle = '#999999';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Sin elementos activos', centerX, centerY);
+                
+                // Dibujar triángulo indicador rojo
+                drawIndicator();
+                
+                return;
+            }
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            
+            // Dibujar los sectores
+            const anglePerItem = (2 * Math.PI) / activeItems.length;
+            
+            for (let i = 0; i < activeItems.length; i++) {
+                const startAngle = i * anglePerItem + (rotation * Math.PI) / 180;
+                const endAngle = (i + 1) * anglePerItem + (rotation * Math.PI) / 180;
+                
+                // Seleccionar color (repetir si hay más de 5 elementos)
+                const colorIndex = i % colors.length;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[colorIndex];
+                ctx.fill();
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Dibujar texto
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + anglePerItem / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(activeItems[i], radius - 15, 5);
+                ctx.restore();
+            }
+            
+            // Dibujar círculo central
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 10, 0, 2 * Math.PI);
+            ctx.fillStyle = '#333333';
+            ctx.fill();
+            
+            // Dibujar triángulo indicador rojo
+            drawIndicator();
+        }
+        
+        function drawIndicator() {
+            const centerX = canvas.width / 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, 10);
+            ctx.lineTo(centerX - 10, 30);
+            ctx.lineTo(centerX + 10, 30);
+            ctx.closePath();
+            ctx.fillStyle = '#FF0000';
+            ctx.fill();
+        }
+        
+        function spinWheel() {
+            const activeItems = getActiveItems();
+            
+            if (isSpinning || activeItems.length === 0) return;
+            
+            isSpinning = true;
+            spinButton.disabled = true;
+            spinButton.textContent = 'Girando...';
+            resultContainer.style.display = 'none';
+            
+            // Generar rotación aleatoria (entre 2 y 5 vueltas completas)
+            const spinAngle = 720 + Math.random() * 1080;
+            const startRotation = rotation;
+            const startTime = performance.now();
+            const duration = 3000 + Math.random() * 2000; // Entre 3 y 5 segundos
+            
+            function animateSpin(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Función de easing para desaceleración
+                const easeOut = t => 1 - Math.pow(1 - t, 3);
+                const currentProgress = easeOut(progress);
+                
+                const currentRotation = startRotation + spinAngle * currentProgress;
+                rotation = currentRotation % 360;
+                
+                drawWheel();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateSpin);
+                } else {
+                    // Determinar el elemento seleccionado
+                    const anglePerItem = 360 / activeItems.length;
+                    const normalizedRotation = (360 - (rotation % 360)) % 360;
+                    const selectedIndex = Math.floor(normalizedRotation / anglePerItem);
+                    
+                    // Guardar el último elemento seleccionado
+                    lastSelectedItem = activeItems[selectedIndex];
+                    lastSelectedIndex = items.indexOf(lastSelectedItem);
+                    
+                    // Mostrar el resultado
+                    selectedItemElement.textContent = lastSelectedItem;
+                    resultContainer.style.display = 'block';
+                    
+                    // Restablecer estado
+                    isSpinning = false;
+                    spinButton.disabled = false;
+                    spinButton.textContent = 'Iniciar';
+                }
+            }
+            
+            requestAnimationFrame(animateSpin);
+        }
+        
+        // Manejar eventos de cambio de pantalla completa para actualizar la UI
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+        
+        function updateFullscreenButton() {
+            const fullscreenButton = document.getElementById('fullscreenButton');
+            if (document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement) {
+                fullscreenButton.textContent = 'Salir de Pantalla Completa';
+            } else {
+                fullscreenButton.textContent = 'Pantalla Completa';
+            }
+        }
+        
+        // Inicializar la aplicación
+        init();
+    </script>
+</body>
+</html>
