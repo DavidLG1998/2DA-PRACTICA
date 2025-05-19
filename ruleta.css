@@ -1,0 +1,51 @@
+
+/* === style.css === */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  #ruleta {
+    width: 400px;
+    height: 400px;
+    background: #fff;
+    border-radius: 50%;
+    border: 4px solid #333;
+    margin-bottom: 1rem;
+  }
+  
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  #textarea {
+    width: 300px;
+    height: 150px;
+    resize: none;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  #resultado {
+    margin-top: 1rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #d00;
+  }
