@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Dinámica</title>
+    <link rel="stylesheet" href="ruletasty.css">
+</head>
+<body>
+    <div id="fullscreenContainer" class="fullscreen-container">
+        <h1>Ruleta Dinámica</h1>
+        
+        <div class="textarea-container">
+            <textarea id="itemsTextarea" placeholder="Ingresa los elementos de la ruleta (uno por línea)"></textarea>
+            <div id="editIndicator" class="edit-indicator">MODO EDICIÓN</div>
+        </div>
+        
+        <div class="wheel-container">
+            <canvas id="wheelCanvas" width="300" height="300"></canvas>
+        </div>
+        
+        <div class="buttons-container">
+            <button id="spinButton" class="start-button" onclick="spinWheel()" disabled>Iniciar</button>
+            <button id="resetButton" class="reset-button" onclick="resetRoulette()">Reiniciar</button>
+            <button id="fullscreenButton" class="fullscreen-button" onclick="toggleFullscreen()">Pantalla Completa</button>
+        </div>
+        
+        <div id="resultContainer" class="result-container">
+            <div class="result-title">Elemento seleccionado:</div>
+            <div id="selectedItem" class="result-value"></div>
+        </div>
+        
+        <div class="controls-info">
+            <h3>Controles:</h3>
+            <ul>
+                <li><strong>Espacio o clic en ruleta o botón Iniciar:</strong> Girar la ruleta</li>
+                <li><strong>Tecla S:</strong> Resaltar y ocultar el último elemento sorteado</li>
+                <li><strong>Tecla E o clic en textarea:</strong> Habilitar/deshabilitar modo edición</li>
+                <li><strong>Tecla R o botón Reiniciar:</strong> Restaurar elementos ocultos</li>
+                <li><strong>Tecla F o botón Pantalla Completa:</strong> Activar/desactivar pantalla completa</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+   
+</body>
+</html>

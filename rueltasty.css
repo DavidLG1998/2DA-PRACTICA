@@ -1,0 +1,187 @@
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+        
+        .fullscreen-container {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        
+        .textarea-container {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            height: 120px;
+            resize: none;
+            font-size: 1rem;
+        }
+        
+        textarea:focus {
+            outline: 2px solid #3498db;
+        }
+        
+        .edit-mode {
+            border: 2px solid #e74c3c;
+        }
+        
+        .edit-indicator {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            display: none;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        button {
+            padding: 10px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .start-button {
+            background-color: #2ecc71;
+        }
+        
+        .start-button:hover {
+            background-color: #27ae60;
+        }
+        
+        .reset-button {
+            background-color: #e67e22;
+        }
+        
+        .reset-button:hover {
+            background-color: #d35400;
+        }
+        
+        .fullscreen-button {
+            background-color: #9b59b6;
+        }
+        
+        .fullscreen-button:hover {
+            background-color: #8e44ad;
+        }
+        
+        .wheel-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        canvas {
+            cursor: pointer;
+        }
+        
+        .result-container {
+            margin-top: 1.5rem;
+            padding: 16px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: none;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+        
+        .controls-info {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .controls-info h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .controls-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .controls-info li {
+            margin-bottom: 5px;
+        }
+        
+        /* Estilos para pantalla completa */
+        :fullscreen {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        :-webkit-full-screen {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        :-ms-fullscreen {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+    
