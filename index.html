@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Equipos Aleatorios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Pantalla de entrada -->
+    <div id="input-screen">
+      <h1>Crea equipos al azar</h1>
+      <p class="subtitle">a partir de una lista de nombres de forma automática y gratuita.</p>
+
+      <div class="form-grid">
+        <div class="form-section">
+          <h2>1. Ingresa los participantes</h2>
+          <div class="textarea-container">
+            <textarea 
+              id="participants" 
+              placeholder="Cada participante debe estar en una nueva línea"
+              maxlength="5000"></textarea>
+            <div class="counter">0</div>
+          </div>
+          <p class="hint">Agrega un * para indicar líderes de grupo. *Líder</p>
+        </div>
+
+        <div class="form-section">
+          <div>
+            <h2>2. Cómo dividir:</h2>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="distribution" value="teams" checked>
+                <span>Cantidad de equipos</span>
+              </label>
+              <label>
+                <input type="radio" name="distribution" value="members">
+                <span>Participantes por equipo</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="teams-selector" class="select-container">
+            <label for="team-count">Selecciona la cantidad de equipos</label>
+            <select id="team-count">
+              <!-- Opciones generadas por JavaScript -->
+            </select>
+          </div>
+
+          <div id="members-selector" class="select-container" style="display: none;">
+            <label for="members-count">Participantes por equipo</label>
+            <select id="members-count">
+              <!-- Opciones generadas por JavaScript -->
+            </select>
+          </div>
+
+          <div>
+            <h2>3. Título</h2>
+            <input type="text" id="title" placeholder="Copa del Mundo Qatar 2022">
+          </div>
+
+          <div class="button-group">
+            <button id="clear-btn" class="btn-outline">Limpiar</button>
+            <button id="generate-btn" class="btn-primary">Generar equipos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla de resultados -->
+    <div id="results-screen" style="display: none;">
+      <div id="results-container">
+        <h1 id="results-title">Equipos Generados</h1>
+        <div id="teams-grid"></div>
+      </div>
+
+      <div class="button-group centered">
+        <button id="download-btn" class="btn-action">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Descargar como JPG
+        </button>
+        <button id="copy-btn" class="btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copiar al portapapeles
+        </button>
+        <button id="copy-columns-btn" class="btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg>
+          Copiar en columnas
+        </button>
+        <button id="back-btn" class="btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 12a9 9 0 0 0 15 6.7L21 16"></path><path d="M21 22v-6h-6"></path></svg>
+          Volver
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
