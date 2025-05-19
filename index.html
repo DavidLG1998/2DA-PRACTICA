@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteo de Equipos Aleatorios</title>
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Pantalla de configuración */
+        .setup-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        /* F1: Lista de participantes */
+        #participants {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 14px;
+            min-height: 150px;
+        }
+
+        .counter {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            background-color: #f0f0f0;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        /* F2: Configuración del sorteo */
+        .select-container {
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #quantity {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #quantity-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        #team-title {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Botones */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .primary-btn {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background-color: #d81b60;
+        }
+
+        .secondary-btn {
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .secondary-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Pantalla de resultados */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .results-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #results-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* F3: Equipos generados */
+        .teams-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .team-header {
+            background-color: #e91e63;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .team-members {
+            padding: 10px;
+        }
+
+        .team-member {
+            background-color: #f9f9f9;
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .team-member:last-child {
+            margin-bottom: 0;
+        }
+
+        .placeholder {
+            opacity: 0.5;
+            background-color: #f0f0f0;
+            border: 1px dashed #ccc;
+        }
+
+        /* F4: Botones de exportación */
+        .export-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .export-btn {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .export-btn:first-child {
+            margin-left: 0;
+        }
+
+        .export-btn:last-child {
+            margin-right: 0;
+        }
+
+        .export-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .icon {
+            margin-right: 8px;
+        }
+
+        /* Animación */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .appearing {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .export-buttons {
+                flex-direction: column;
+            }
+
+            .export-btn {
+                margin: 5px 0;
+            }
+
+            .teams-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sorteo de Equipos Aleatorios</h1>
+        
+        <!-- Pantalla de configuración -->
+        <div id="setup-screen">
+            <div class="setup-container">
+                <!-- F1: Lista de participantes -->
+                <div class="form-section">
+                    <h2>1. Lista de Participantes</h2>
+                    <textarea id="participants" placeholder="Ingresa un participante por línea (máximo 100 participantes, 50 caracteres cada uno)"></textarea>
+                    <div id="participant-counter" class="counter">0</div>
+                </div>
+                
+                <!-- F2: Configuración del sorteo -->
+                <div class="form-section">
+                    <h2>2. Configuración del Sorteo</h2>
+                    
+                    <div class="select-container">
+                        <select id="draw-type">
+                            <option value="teams">Cantidad de equipos</option>
+                            <option value="members">Participantes por equipo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="quantity-container">
+                        <input type="number" id="quantity" min="1" value="2">
+                        <span id="quantity-label">equipos</span>
+                    </div>
+                    
+                    <h2>3. Título para los equipos</h2>
+                    <input type="text" id="team-title" placeholder="Ej: Equipo, Grupo, etc." value="Equipo">
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="button-container">
+                    <button id="clear-btn" class="secondary-btn">Limpiar</button>
+                    <button id="generate-btn" class="primary-btn">Generar Equipos</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de resultados (inicialmente oculta) -->
+        <div id="results-screen" class="hidden">
+            <div class="results-header">
+                <button id="back-btn" class="secondary-btn">Volver</button>
+                <button id="skip-animation-btn" class="secondary-btn">Saltar animación</button>
+            </div>
+            
+            <div class="results-container">
+                <h2 id="results-title">Resultados del Sorteo</h2>
+                
+                <div id="teams-container" class="teams-container">
+                    <!-- Los equipos se generarán dinámicamente aquí -->
+                </div>
+            </div>
+            
+            <!-- F4: Botones de exportación -->
+            <div class="export-buttons">
+                <button id="download-jpg-btn" class="export-btn">
+                    <span class="icon">⬇️</span> Descargar como JPG
+                </button>
+                <button id="copy-clipboard-btn" class="export-btn">
+                    <span class="icon">📋</span> Copiar al portapapeles
+                </button>
+                <button id="copy-columns-btn" class="export-btn">
+                    <span class="icon">📊</span> Copiar en columnas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const setupScreen = document.getElementById('setup-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const participantsTextarea = document.getElementById('participants');
+        const participantCounter = document.getElementById('participant-counter');
+        const drawTypeSelect = document.getElementById('draw-type');
+        const quantityInput = document.getElementById('quantity');
+        const quantityLabel = document.getElementById('quantity-label');
+        const teamTitleInput = document.getElementById('team-title');
+        const generateBtn = document.getElementById('generate-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const backBtn = document.getElementById('back-btn');
+        const skipAnimationBtn = document.getElementById('skip-animation-btn');
+        const teamsContainer = document.getElementById('teams-container');
+        const resultsTitle = document.getElementById('results-title');
+        const downloadJpgBtn = document.getElementById('download-jpg-btn');
+        const copyClipboardBtn = document.getElementById('copy-clipboard-btn');
+        const copyColumnsBtn = document.getElementById('copy-columns-btn');
+
+        // Variables globales
+        let teams = [];
+        let isAnimating = false;
+        let animationInterval = null;
+        let currentIndex = 0;
+        let displayedTeams = [];
+        let allParticipantsWithTeams = [];
+
+        // F1: Contador y validación de participantes
+        participantsTextarea.addEventListener('input', function() {
+            // Dividir el texto en líneas y filtrar líneas vacías
+            const lines = this.value.split('\n').filter(line => line.trim().length > 0);
+            
+            // Limitar a 100 participantes
+            if (lines.length > 100) {
+                const limitedLines = lines.slice(0, 100);
+                this.value = limitedLines.join('\n');
+            }
+            
+            // Limitar cada línea a 50 caracteres
+            const limitedLines = this.value.split('\n').map(line => {
+                if (line.length > 50) {
+                    return line.substring(0, 50);
+                }
+                return line;
+            });
+            this.value = limitedLines.join('\n');
+            
+            // Actualizar contador
+            const count = this.value.split('\n').filter(line => line.trim().length > 0).length;
+            participantCounter.textContent = count;
+        });
+
+        // F2: Cambiar etiqueta según tipo de sorteo
+        drawTypeSelect.addEventListener('change', function() {
+            if (this.value === 'teams') {
+                quantityLabel.textContent = 'equipos';
+            } else {
+                quantityLabel.textContent = 'participantes por equipo';
+            }
+        });
+
+        // Limpiar formulario
+        clearBtn.addEventListener('click', function() {
+            participantsTextarea.value = '';
+            participantCounter.textContent = '0';
+            quantityInput.value = '2';
+            teamTitleInput.value = 'Equipo';
+            drawTypeSelect.value = 'teams';
+            quantityLabel.textContent = 'equipos';
+        });
+
+        // F3: Generar equipos
+        generateBtn.addEventListener('click', function() {
+            // Obtener lista de participantes
+            const participantList = participantsTextarea.value
+                .split('\n')
+                .map(p => p.trim())
+                .filter(p => p.length > 0);
+            
+            if (participantList.length === 0) {
+                alert('Debe ingresar al menos un participante');
+                return;
+            }
+            
+            // Obtener configuración
+            const teamTitle = teamTitleInput.value.trim() || 'Equipo';
+            const drawType = drawTypeSelect.value;
+            const quantity = parseInt(quantityInput.value, 10) || 2;
+            
+            // Validar la cantidad
+            if (quantity < 1) {
+                alert('La cantidad debe ser al menos 1');
+                return;
+            }
+            
+            if (drawType === 'teams' && quantity > participantList.length) {
+                alert('No puede haber más equipos que participantes');
+                return;
+            }
+            
+            // Generar equipos aleatorios
+            teams = generateRandomTeams(participantList, drawType, quantity);
+            
+            // Preparar para animación
+            displayedTeams = Array.from({ length: teams.length }, () => []);
+            
+            // Crear lista plana de todos los participantes con su equipo correspondiente
+            allParticipantsWithTeams = [];
+            teams.forEach((team, teamIndex) => {
+                team.forEach(member => {
+                    allParticipantsWithTeams.push({ team: teamIndex, member });
+                });
+            });
+            
+            currentIndex = 0;
+            
+            // Actualizar título de resultados
+            resultsTitle.textContent = teamTitle;
+            
+            // Mostrar pantalla de resultados
+            setupScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            
+            // Iniciar animación
+            startAnimation();
+        });
+
+        // Volver a la pantalla de configuración
+        backBtn.addEventListener('click', function() {
+            stopAnimation();
+            resultsScreen.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+        });
+
+        // Saltar animación
+        skipAnimationBtn.addEventListener('click', function() {
+            stopAnimation();
+            
+            // Mostrar todos los participantes de una vez
+            displayedTeams = JSON.parse(JSON.stringify(teams));
+            renderTeams();
+            
+            this.disabled = true;
+        });
+
+        // F4: Descargar como JPG
+        downloadJpgBtn.addEventListener('click', function() {
+            // Crear un canvas para dibujar la imagen
+            const canvas = document.createElement('canvas');
+            const resultsContainer = document.querySelector('.results-container');
+            const width = resultsContainer.offsetWidth;
+            const height = resultsContainer.offsetHeight;
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Dibujar fondo blanco
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Dibujar título
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(resultsTitle.textContent, width / 2, 30);
+            
+            // Dibujar equipos
+            const teamWidth = 180;
+            const teamHeight = 200;
+            const padding = 20;
+            const headerHeight = 40;
+            const startY = 60;
+            
+            let row = 0;
+            let col = 0;
+            const maxCols = Math.floor(width / (teamWidth + padding));
+            
+            teams.forEach((team, teamIndex) => {
+                if (col >= maxCols) {
+                    col = 0;
+                    row++;
+                }
+                
+                const x = col * (teamWidth + padding) + padding;
+                const y = row * (teamHeight + padding) + startY;
+                
+                // Dibujar tarjeta de equipo
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 1;
+                ctx.fillRect(x, y, teamWidth, teamHeight);
+                ctx.strokeRect(x, y, teamWidth, teamHeight);
+                
+                // Dibujar encabezado del equipo
+                ctx.fillStyle = '#e91e63';
+                ctx.fillRect(x, y, teamWidth, headerHeight);
+                
+                // Texto del encabezado
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${teamTitleInput.value} ${teamIndex + 1}`, x + teamWidth / 2, y + 25);
+                
+                // Dibujar miembros
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'left';
+                
+                team.forEach((member, memberIndex) => {
+                    const memberY = y + headerHeight + (memberIndex + 1) * 30;
+                    
+                    // Fondo del miembro
+                    ctx.fillStyle = '#f9f9f9';
+                    ctx.fillRect(x + 10, memberY - 20, teamWidth - 20, 24);
+                    
+                    // Texto del miembro
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(member, x + 15, memberY - 4);
+                });
+                
+                col++;
+            });
+            
+            // Convertir canvas a imagen y descargar
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            const link = document.createElement('a');
+            link.download = 'equipos-sorteo.jpg';
+            link.href = dataUrl;
+            link.click();
+        });
+
+        // F4: Copiar al portapapeles
+        copyClipboardBtn.addEventListener('click', function() {
+            const teamTitle = teamTitleInput.value.trim() || 'Equipo';
+            const text = teams.map((team, index) => `${teamTitle} ${index + 1}: ${team.join(', ')}`).join('\n');
+            
+            copyToClipboard(text);
+            alert('Copiado al portapapeles');
+        });
+
+        // F4: Copiar en columnas
+        copyColumnsBtn.addEventListener('click', function() {
+            const teamTitle = teamTitleInput.value.trim() || 'Equipo';
+            
+            // Encontrar el tamaño máximo de equipo
+            const maxTeamSize = Math.max(...teams.map(team => team.length));
+            
+            // Crear estructura de tabla
+            let columnsText = teams.map((_, i) => `${teamTitle} ${i + 1}`).join('\t') + '\n';
+            
+            for (let i = 0; i < maxTeamSize; i++) {
+                const row = teams.map(team => team[i] || '').join('\t');
+                columnsText += row + '\n';
+            }
+            
+            copyToClipboard(columnsText);
+            alert('Columnas copiadas al portapapeles');
+        });
+
+        // Función para generar equipos aleatorios
+        function generateRandomTeams(participants, drawType, quantity) {
+            // Mezclar participantes aleatoriamente
+            const shuffled = [...participants];
+            
+            // Algoritmo de Fisher-Yates para mezclar el array
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            
+            let generatedTeams = [];
+            
+            if (drawType === 'teams') {
+                // Generar equipos basados en número de equipos
+                const teamCount = quantity;
+                generatedTeams = Array.from({ length: teamCount }, () => []);
+                
+                // Distribuir participantes uno a uno en cada equipo
+                for (let i = 0; i < shuffled.length; i++) {
+                    const teamIndex = i % teamCount;
+                    generatedTeams[teamIndex].push(shuffled[i]);
+                }
+            } else {
+                // Generar equipos basados en miembros por equipo
+                const membersPerTeam = quantity;
+                const teamCount = Math.ceil(shuffled.length / membersPerTeam);
+                
+                generatedTeams = Array.from({ length: teamCount }, (_, i) => {
+                    const start = i * membersPerTeam;
+                    return shuffled.slice(start, Math.min(start + membersPerTeam, shuffled.length));
+                });
+            }
+            
+            return generatedTeams;
+        }
+
+        // Iniciar animación
+        function startAnimation() {
+            isAnimating = true;
+            skipAnimationBtn.disabled = false;
+            
+            renderTeams();
+            
+            animationInterval = setInterval(() => {
+                if (currentIndex < allParticipantsWithTeams.length) {
+                    const { team, member } = allParticipantsWithTeams[currentIndex];
+                    
+                    // Añadir miembro al equipo correspondiente
+                    displayedTeams[team].push(member);
+                    
+                    currentIndex++;
+                    renderTeams();
+                } else {
+                    // Animación completa
+                    stopAnimation();
+                }
+            }, 300);
+        }
+
+        // Detener animación
+        function stopAnimation() {
+            isAnimating = false;
+            clearInterval(animationInterval);
+            skipAnimationBtn.disabled = true;
+        }
+
+        // Renderizar equipos en la pantalla
+        function renderTeams() {
+            teamsContainer.innerHTML = '';
+            
+            teams.forEach((team, teamIndex) => {
+                const teamCard = document.createElement('div');
+                teamCard.className = 'team-card';
+                
+                const teamHeader = document.createElement('div');
+                teamHeader.className = 'team-header';
+                teamHeader.textContent = `${teamTitleInput.value} ${teamIndex + 1}`;
+                
+                const teamMembers = document.createElement('div');
+                teamMembers.className = 'team-members';
+                
+                // Mostrar miembros ya revelados
+                const displayedTeam = displayedTeams[teamIndex] || [];
+                displayedTeam.forEach((member, memberIndex) => {
+                    const memberElement = document.createElement('div');
+                    memberElement.className = 'team-member';
+                    
+                    // Añadir clase para animación si es el último miembro añadido
+                    if (memberIndex === displayedTeam.length - 1 && isAnimating) {
+                        memberElement.classList.add('appearing');
+                    }
+                    
+                    memberElement.textContent = member;
+                    teamMembers.appendChild(memberElement);
+                });
+                
+                // Mostrar placeholders para miembros pendientes
+                const pendingCount = team.length - displayedTeam.length;
+                for (let i = 0; i < pendingCount; i++) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'team-member placeholder';
+                    placeholder.textContent = '...';
+                    teamMembers.appendChild(placeholder);
+                }
+                
+                teamCard.appendChild(teamHeader);
+                teamCard.appendChild(teamMembers);
+                teamsContainer.appendChild(teamCard);
+            });
+        }
+
+        // Función auxiliar para copiar al portapapeles
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Error al copiar al portapapeles:', err);
+                alert('No se pudo copiar al portapapeles');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
